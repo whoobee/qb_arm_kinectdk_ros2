@@ -10,9 +10,7 @@
 // Library headers
 //
 #include <k4a/k4a.h>
-//#include <ros/ros.h>
 #include "rclcpp/rclcpp.hpp"
-
 // Project headers
 //
 
@@ -34,6 +32,10 @@
 #define ROS_PARAM_LIST                                                                                                 \
   LIST_ENTRY(sensor_sn, "The serial number of the sensor this node should connect to.", std::string, std::string(""))  \
   LIST_ENTRY(depth_enabled, "True if depth camera should be enabled", bool, true)                                      \
+  LIST_ENTRY(depth_unit, "Depth distance units. Options are: "+                                                        \
+                         sensor_msgs::image_encodings::TYPE_32FC1+" (32 bit float metre) or "+                         \
+                         sensor_msgs::image_encodings::TYPE_16UC1+" (16 bit integer millimetre)",                      \
+                         std::string, std::string(sensor_msgs::image_encodings::TYPE_16UC1))                           \
   LIST_ENTRY(depth_mode,                                                                                               \
              "The mode of the depth camera. Options are: NFOV_2X2BINNED, NFOV_UNBINNED, WFOV_2X2BINNED, "              \
              "WFOV_UNBINNED, PASSIVE_IR",                                                                              \
@@ -80,17 +82,24 @@
               "Delay subordinate camera off master camera by specified amount in usec.",                               \
               int, 0)
 
-class K4AROSDeviceParams
+class K4AROSDeviceParams : public rclcpp::Node
 {
 public:
+  K4AROSDeviceParams();
 
   // Get a device configuration from a a set of parameters
-  static k4a_result_t GetDeviceConfig(k4a_device_configuration_t* configuration, rclcpp::Node* node);
+  k4a_result_t GetDeviceConfig(k4a_device_configuration_t* configuration);
 
-private:
-  
-  std::string recordingFile;
+  // Print help messages to the console
+  void Help();
 
+  // Print the value of all parameters
+  void Print();
+
+// Parameters
+#define LIST_ENTRY(param_variable, param_help_string, param_type, param_default_val) param_type param_variable;
+  ROS_PARAM_LIST
+#undef LIST_ENTRY
 };
 
 #endif  // K4A_ROS_DEVICE_PARAMS_H

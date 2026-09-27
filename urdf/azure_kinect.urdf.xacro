@@ -5,7 +5,6 @@
  -->
 
 <robot name="azure-kinect" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
   <material name="black">
     <color rgba="0. 0. 0. 1" />
   </material>
