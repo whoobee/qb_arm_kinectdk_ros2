@@ -141,6 +141,10 @@ def generate_launch_description():
         package='azure_kinect_ros_driver',
         executable='node',
         output='screen',
+        # The driver exits ("Failed to poll cameras: node cannot continue") when a capture times out (USB / load
+        # hiccup) - and reports that as a clean exit, so nothing restarted it: started again after 3 s (qBArm 2026-10-05)
+        respawn=True,
+        respawn_delay=3.0,
         parameters=[
             {'depth_enabled': launch.substitutions.LaunchConfiguration('depth_enabled')},
             {'depth_mode': launch.substitutions.LaunchConfiguration('depth_mode')},
